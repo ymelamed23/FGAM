@@ -9,4 +9,4 @@ The goal of [NBA FGAM](https://ymelamed.shinyapps.io/FGAM/) is to identify which
 
 # Screenshot:
 
-[![](app.PNG){}](https://ymelamed.shinyapps.io/FGAM/)
+[![](app.PNG)](https://ymelamed.shinyapps.io/FGAM/)
