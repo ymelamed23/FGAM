@@ -40,17 +40,26 @@ ui <- fluidPage(theme = shinytheme("united"),
        #               choices = unique(player_wide$ShotLocations.PLAYER_NAME),
         #              selected = "Luka Doncic")),
     tabPanel("About",
-             fluidRow(h1("Yonathan Melamed's NBA Field Goals Above the Mean (Updated 2/16/2024)")),
-             fluidRow(h3("Welcome to my site! I've developed a very simple metric that aims to estimate each player's field goals added above the average shooter at each shot location. For each player, I take their attempted field goals for each shot location and multiply it by the league-wide season average FG% of the shot location (I strip out each player's own shot attempts from this average). This gives me the number of field goals the player would make had they been shooting like the average shooter of each shot location. I then subtract this from the amount of field goals the player actually has made, giving me my metric, Field Goals Above the Mean. I find this simple calculation both intuitive and more contextual than simple field goals made, FG%, or even TS%. It's a combination of both volume and efficiency. Still, it has it's limitations, and should not be thought of as a pure 'value added' statistic, since we are penalizing/rewarding players differently for 2/3 point shots that have the same value. In the above tabs you can find radar graphs to compare 2 players' statistics (thanks to @tanya_shapiro for the inspo!), along with a table that displays the top 10 at each measure, but can be filtered and sorted to find different combinations of players. Thanks for checking it out!"))),
+             fluidRow(column(12, style='padding-left:150px; padding-right:150px;',
+               h1("Yonathan Melamed's NBA Field Goals Above the Mean (Updated 2/27/2024)"))),
+             fluidRow(column(12, style='padding-left:150px; padding-right:150px;',
+               h4(strong("About the App:"), "Welcome to my site!  In the above tabs you can find radar graphs to compare 2 players' Field Goals above the Mean statistics (thanks to @tanya_shapiro for the inspo!), along with a table that displays the top 10 at each measure, but can be filtered and sorted to find different combinations of players. Thanks for checking it out!"))),
+             fluidRow(column(12, style='padding-left:150px; padding-right:150px;',
+               h4(strong("About FGAM:"), "I've developed a very simple metric that aims to estimate each player's field goals added above the average shooter at each shot location. For each player, I take their attempted field goals for each shot location and multiply it by the league-wide season average FG% of the shot location (I strip out each player's own shot attempts from this average). This gives me the number of field goals the player would make had they been shooting like the average shooter of each shot location. I then subtract this from the amount of field goals the player actually has made, giving me my metric, Field Goals Above the Mean. I find this simple calculation both intuitive and more contextual than simple field goals made, FG%, or even TS%. It's a combination of both volume and efficiency. Still, it has it's limitations, and should not be thought of as a pure 'value added' statistic, since we are penalizing/rewarding players differently for 2/3 point shots that have the same value.")))),
     tabPanel("Radar Graph",
-             fluidRow(selectInput(inputId = "player1", 
-                                  label   = "Select Player 1 (Note: Giannis currently breaks the graph.)", 
+             fluidRow(width=12, 
+                      column(width=4, style="text-align:center;",
+                             selectInput(inputId = "player1", 
+                                  label   = "Select Player 1", 
                                   choices = unique(player_wide$ShotLocations.PLAYER_NAME),
                                   selected = "LeBron James")),
-             fluidRow(selectInput(inputId = "player2", 
+                      column(width=4,style=" text-align:center;",
+                             selectInput(inputId = "player2", 
                                   label   = "Select Player 2", 
                                   choices = unique(player_wide$ShotLocations.PLAYER_NAME),
-                                  selected = "LeBron James")),
+                                  selected = "Luka Doncic")),
+                      column(width = 4,style=" text-align:center;",
+                             h5("Note: Giannis and Jokic currently break the graph."))),
              
              fluidRow(
            plotOutput("distPlot", width = '100%')
@@ -144,18 +153,19 @@ server <- function(input, output) {
               plot.caption = element_text(margin=margin(t=15), size = 4),
               axis.title=element_blank(),
               panel.grid = element_blank(),
-              plot.margin=margin(t=10,b=5,l=10,r=10),
+              plot.margin=margin(t=0,b=5,l=10,r=10),
               axis.text=element_blank(),
               axis.ticks = element_blank(),
               strip.text=element_text(face="bold", color=pal_font, size=12, vjust=-0.5))
       
-    }, height = 1300, width = 1800)
+    }, height = 850, width = 1800)
     
     app_tbl_data = reactive({player_wide %>% filter(Shot_Type==input$leader_type) %>% 
         arrange(-FGAM) %>% 
        # mutate(rank=row_number()) %>% 
         select(ShotLocations.PLAYER_NAME, ShotLocations.TEAM_ABBREVIATION, FGAM) %>% 
         rename("Player"=ShotLocations.PLAYER_NAME, "Team"=ShotLocations.TEAM_ABBREVIATION) %>% 
+        mutate("Team"=as.factor(Team)) %>% 
         mutate(across(is.numeric, round, digits = 3))})
     output$leaders = renderDT(app_tbl_data(), filter="top", options = list(columnDefs = list(list(className = 'dt-center', targets = 0:3)))) 
 }
