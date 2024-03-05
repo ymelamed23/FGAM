@@ -4,8 +4,8 @@ library(tidyverse)
 library(plotly)
 library(geomtextpath)
 library(ggimage)
-setwd("/ace/home/ymelamed/NBA_xfg")
-output = "/ace/home/ymelamed/NBA_xfg/FGAM_app/"
+setwd()
+output = 
 ########################################### simple model##################################################################
 options(bitmapType='cairo')
 #load player shots
